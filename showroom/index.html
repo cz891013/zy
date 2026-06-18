@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 数字人展厅</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: rgba(255,255,255,0.035);
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(139,92,246,0.3);
+      --text-primary: #f1f1f7;
+      --text-secondary: #9898ad;
+      --text-muted: #6b6b80;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --blue: #3b82f6;
+      --cyan: #06b6d4;
+      --gradient-main: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(139,92,246,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 70%, rgba(6,182,212,0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    header {
+      padding: 20px 0 16px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(10,10,15,0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header .container { display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: -0.3px; }
+    .logo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--gradient-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .logo span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    nav { display: flex; gap: 24px; align-items: center; }
+    nav a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; position: relative; }
+    nav a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: var(--gradient-main); transition: width 0.25s ease; border-radius: 1px;
+    }
+    nav a:hover { color: var(--text-primary); }
+    nav a:hover::after { width: 100%; }
+    .nav-badge {
+      background: var(--gradient-main); color: #fff; padding: 6px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; text-decoration: none; transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-badge:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .hero { padding: 80px 0 60px; text-align: center; }
+    .hero-tag {
+      display: inline-block; padding: 5px 14px; border-radius: 20px;
+      background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.2);
+      color: var(--purple-light); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; }
+    .hero h1 span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { font-size: clamp(16px, 2vw, 20px); color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; line-height: 1.7; }
+
+    section { padding: 60px 0; }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-header h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .section-header h2 span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .section-header p { color: var(--text-secondary); font-size: 15px; }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; backdrop-filter: blur(8px);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .card:hover { border-color: var(--border-hover); box-shadow: 0 0 30px rgba(139,92,246,0.08); transform: translateY(-2px); }
+
+    .embed-wrapper { position: relative; border-radius: var(--radius-sm); overflow: hidden; background: #000; border: 1px solid var(--border); }
+    .embed-wrapper iframe,
+    .embed-wrapper video { display: block; width: 100%; height: 100%; border: none; }
+
+    .digital-human-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; }
+    .video-container { aspect-ratio: 9 / 16; max-height: 560px; width: 100%; }
+
+    .coze-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; }
+    .coze-chat-container { aspect-ratio: 3 / 4; max-height: 600px; width: 100%; }
+
+    .dh-info, .coze-info { display: flex; flex-direction: column; justify-content: center; }
+    .dh-info h3, .coze-info h3 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+    .dh-info p, .coze-info p { color: var(--text-secondary); font-size: 14px; line-height: 1.8; margin-bottom: 20px; }
+    .dh-features { display: flex; flex-wrap: wrap; gap: 10px; }
+    .dh-features .tag {
+      padding: 6px 14px; border-radius: 20px; background: rgba(139,92,246,0.08);
+      border: 1px solid rgba(139,92,246,0.15); color: var(--purple-light); font-size: 12px; font-weight: 500;
+    }
+    .coze-config { display: flex; flex-direction: column; gap: 12px; }
+    .config-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary);
+    }
+    .config-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .config-item .dot.green { background: #22c55e; }
+    .config-item .dot.blue { background: var(--blue); }
+    .config-item .dot.purple { background: var(--purple); }
+
+    .embed-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+      height: 100%; min-height: 200px; background: rgba(255,255,255,0.02);
+      color: var(--text-muted); text-align: center; padding: 20px;
+      position: absolute; inset: 0; z-index: 2;
+    }
+    .embed-placeholder .big-icon { font-size: 40px; opacity: 0.4; }
+    .embed-placeholder p { font-size: 13px; max-width: 280px; }
+    .embed-placeholder p code { font-size: 12px; background: rgba(139,92,246,0.1); padding: 1px 5px; border-radius: 4px; color: var(--purple-light); }
+    .embed-placeholder .hint { font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.04); padding: 4px 10px; border-radius: 6px; font-family: 'Inter', monospace; }
+
+    .howto { background: var(--bg-secondary); border-radius: var(--radius); padding: 40px; border: 1px solid var(--border); }
+    .howto h3 { font-size: 20px; font-weight: 600; margin-bottom: 20px; text-align: center; }
+    .howto-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .step { padding: 20px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: border-color 0.3s; }
+    .step:hover { border-color: var(--border-hover); }
+    .step .num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--gradient-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 10px;
+    }
+    .step h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .step p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .step code { font-size: 12px; background: rgba(139,92,246,0.1); padding: 2px 6px; border-radius: 4px; color: var(--purple-light); }
+
+    footer { border-top: 1px solid var(--border); padding: 32px 0; margin-top: 20px; }
+    footer .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    footer p { color: var(--text-muted); font-size: 13px; }
+    footer a { color: var(--purple-light); text-decoration: none; font-size: 13px; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 820px) {
+      .digital-human-grid, .coze-layout { grid-template-columns: 1fr; }
+      .video-container, .coze-chat-container { max-height: 480px; }
+      .dh-info, .coze-info { order: -1; }
+      section { padding: 40px 0; }
+      .hero { padding: 56px 0 40px; }
+      .howto { padding: 28px 20px; }
+      .howto-steps { grid-template-columns: 1fr; }
+      header { padding: 14px 0 12px; }
+      nav a.nav-link { display: none; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      .card { padding: 20px; }
+      footer .container { flex-direction: column; text-align: center; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-in { animation: fadeUp 0.7s ease-out forwards; }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo"><div class="logo-icon">✦</div><span>AI 展厅</span></div>
+      <nav>
+        <a href="#digital-human" class="nav-link">数字人</a>
+        <a href="#coze" class="nav-link">AI 问答</a>
+        <a href="#howto" class="nav-link">部署指引</a>
+        <a href="#howto" class="nav-badge">GitHub Pages</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-tag animate-in">AI Showroom</div>
+      <h1 class="animate-in delay-1">欢迎来到 <span>AI 数字人展厅</span></h1>
+      <p class="animate-in delay-2">融合数字人交互与智能问答，为企业打造 7×24 小时全天候的 AI 服务体验。嵌入即用，一键部署到 GitHub Pages。</p>
+    </div>
+  </section>
+
+  <section id="digital-human">
+    <div class="container">
+      <div class="section-header animate-in">
+        <h2>✦ <span>数字人</span> 交互</h2>
+        <p>真人级 AI 数字人，自然语音、表情、动作，沉浸式对话体验</p>
+      </div>
+      <div class="digital-human-grid">
+        <div class="card animate-in delay-1" style="padding:16px;">
+          <div class="video-container embed-wrapper" style="display:flex;align-items:center;justify-content:center;">
+            <!-- ↓↓↓ 本地 MP4 数字人视频 ↓↓↓ -->
+            <video id="digitalHumanVideo" class="dh-video" src="微信视频2026-06-18_215505_534.mp4"
+              controls autoplay muted loop playsinline
+              style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></video>
+            <!-- ↑↑↑ 如需更换视频，修改上方 src 文件名 ↑↑↑ -->
+            <div class="embed-placeholder" id="dh-placeholder" style="display:none">
+              <div class="big-icon">🎬</div>
+              <p>在此嵌入你的数字人视频</p>
+              <span class="hint">&lt;video src="文件名.mp4"&gt;</span>
+            </div>
+          </div>
+        </div>
+        <div class="card dh-info animate-in delay-2">
+          <h3>🤖 数字人配置</h3>
+          <p>数字人视频文件已嵌入，放入 <code>showroom/</code> 目录即可播放。支持自动循环、控制栏交互。如需更换视频，修改左侧 <code>src</code> 文件名。</p>
+          <div class="dh-features">
+            <span class="tag">✦ 本地视频播放</span>
+            <span class="tag">✦ 自动循环</span>
+            <span class="tag">✦ 竖屏 9:16</span>
+            <span class="tag">✦ 静音自动播放</span>
+            <span class="tag">✦ 控制栏可交互</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="coze">
+    <div class="container">
+      <div class="section-header animate-in">
+        <h2>✦ <span>Coze AI</span> 智能问答</h2>
+        <p>基于 Coze 平台构建的 AI 问答机器人，快速接入知识库与对话能力</p>
+      </div>
+      <div class="coze-layout">
+        <div class="card coze-info animate-in delay-1">
+          <h3>💬 Coze 问答配置</h3>
+          <p>在 Coze 平台创建你的 Bot，将生成的 iframe 嵌入代码粘贴到右侧聊天框中。支持自定义知识库、工作流、插件、角色设定。</p>
+          <div class="coze-config">
+            <div class="config-item"><span class="dot green"></span>知识库检索</div>
+            <div class="config-item"><span class="dot blue"></span>多轮对话</div>
+            <div class="config-item"><span class="dot purple"></span>自定义 Prompt</div>
+          </div>
+        </div>
+        <div class="card animate-in delay-2" style="padding:16px;">
+          <div class="coze-chat-container embed-wrapper">
+            <iframe src="https://www.coze.cn/store/agent/7652235300063772710?bot_id=true"
+              title="Coze AI 问答" allow="autoplay; microphone; camera; fullscreen" loading="lazy"></iframe>
+            <div class="embed-placeholder" id="coze-placeholder" style="display:none">
+              <div class="big-icon">💬</div>
+              <p>在此嵌入你的 Coze 问答 Bot</p>
+              <span class="hint">&lt;iframe src="your-coze-bot-url"&gt;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="howto">
+    <div class="container">
+      <div class="section-header animate-in">
+        <h2>✦ <span>部署指引</span></h2>
+        <p>三步完成配置，一键部署到 GitHub Pages</p>
+      </div>
+      <div class="howto animate-in delay-1">
+        <h3>📋 配置步骤</h3>
+        <div class="howto-steps">
+          <div class="step">
+            <div class="num">1</div>
+            <h4>放入数字人视频</h4>
+            <p>数字人 <code>.mp4</code> 文件已放入 <code>showroom/</code> 目录，开箱即可播放。如需更换，替换文件并修改 <code>src</code> 文件名。</p>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <h4>Coze Bot 已就绪</h4>
+            <p>Coze 智能体已经嵌入完成，无需额外操作即可使用。</p>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <h4>部署到 GitHub Pages</h4>
+            <p>将 <code>showroom/</code> 推送到 GitHub，在 Settings → Pages 中选择分支 + <code>/showroom</code> 目录。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2025 AI 数字人展厅 · 使用 Cursor 风格构建</p>
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub Pages</a>
+    </div>
+  </footer>
+
+  <script>
+    function checkVideo(vs, pid) {
+      var v = document.querySelector(vs), p = document.getElementById(pid);
+      if (!v || !p) return;
+      if (v.src && v.src !== 'about:blank' && !v.src.startsWith('about:')) p.style.display = 'none';
+    }
+    function checkIframe(is, pid) {
+      var f = document.querySelector(is), p = document.getElementById(pid);
+      if (!f || !p) return;
+      if (f.src && f.src !== 'about:blank' && !f.src.startsWith('about:')) p.style.display = 'none';
+    }
+    checkVideo('.dh-video', 'dh-placeholder');
+    checkIframe('.coze-chat-container iframe', 'coze-placeholder');
+
+    var observer = new IntersectionObserver(function(es) {
+      es.forEach(function(e) { if (e.isIntersecting) e.target.style.animationPlayState = 'running'; });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.animate-in').forEach(function(el) { el.style.animationPlayState = 'paused'; observer.observe(el); });
+
+    document.querySelectorAll('nav a[href^="#"]').forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        var id = a.getAttribute('href').slice(1), t = document.getElementById(id);
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>
